@@ -1,7 +1,7 @@
 package org.chobit.geo;
 
 public final class Coordinate {
-    
+
 
     private final double latitude;
 
