@@ -4,7 +4,7 @@ public class ArgsChecker {
 
 
     public static void check(boolean result, String errorMessage) {
-        if (!result)
+        if (result)
             throw new IllegalArgumentException(errorMessage);
     }
 

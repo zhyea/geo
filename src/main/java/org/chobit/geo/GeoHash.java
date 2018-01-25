@@ -7,11 +7,14 @@ public final class GeoHash {
     public static final int MAX_GEO_HASH_LENGTH = 12;
 
 
+    public static final String BASE32 = "0123456789bcdefghjkmnpqrstuvwxyz";
+
+
     public static String encodeHash(double latitude, double longitude, int length) {
         ArgsChecker.check((length > MAX_GEO_HASH_LENGTH || length < 1), "Length must be between 1 and 12.");
         ArgsChecker.check((latitude < -90D || latitude > 90D), "Latitude must be between -90 and 90.");
         ArgsChecker.check((longitude < -180D || longitude > 180D), "Longitude must be between -180 and 180.");
-        return hashToString(toHashLong(latitude, longitude, length), length);
+        return encodeToString(encodeToLong(latitude, longitude, length), length);
     }
 
 
@@ -31,36 +34,65 @@ public final class GeoHash {
     }
 
 
-    private static String hashToString(long hash, int length) {
-        return "";
+    public static Coordinate decodeHash(String source) {
+        ArgsChecker.check(null == source, "GeoHash is null.");
+        int len = source.trim().length();
+        ArgsChecker.check(len < 0 || len > MAX_GEO_HASH_LENGTH, "GeoHash length must be between 1 and 12.");
+        long hash = decodeToLong(source.trim().toLowerCase());
+        System.out.println(hash);
+        return null;
     }
 
-    private static long toHashLong(double lat, double lng, int len) {
+
+    private static long decodeToLong(String geoHash) {
+        double minLat = -90D, maxLat = 90d;
+        double minLng = -180D, maxLng = 180D;
+
+        long hash = 0L;
+        for (int i = 0; i < geoHash.length(); i++) {
+            hash |= BASE32.indexOf(geoHash.charAt(i));
+            hash <<= 5L;
+        }
+        hash >>>= 5L;
+        return hash;
+    }
+
+
+    private static String encodeToString(long hash, int len) {
+        System.out.println(Long.toBinaryString(hash));
+        char[] chars = new char[len];
+        while (len-- > 0) {
+            chars[len] = BASE32.charAt((int) (hash & 31));
+            hash >>>= 5;
+        }
+        return new String(chars);
+    }
+
+
+    private static long encodeToLong(double lat, double lng, int len) {
         long hash = 0L;
         int times = len * 5;
 
-        double[] latb = new double[]{-90d, 90d};
-        double[] lngb = new double[]{-180d, 180d};
+        double minLat = -90D, maxLat = 90d;
+        double minLng = -180D, maxLng = 180D;
 
         for (int i = 0; i < times; i++) {
-            double latm = (latb[0] + latb[1]) / 2;
-            double lngm = (lngb[0] + lngb[1]) / 2;
-
+            double midLat = (minLat + maxLat) / 2;
+            double midLng = (minLng + maxLng) / 2;
+            hash <<= 1L;
             if (i % 2 == 0) {
-                if (lng <= lngm) {
-                    hash = hash << 1L;
-                    lngb = new double[]{lngb[0], lngm};
+                if (lng <= midLng) {
+                    maxLng = midLng;
                 } else {
-                    hash = hash << 1L | 0x1;
-                    lngb = new double[]{lngm, lngb[1]};
+                    hash |= 1L;
+                    minLng = midLng;
                 }
             } else {
-                if (lat <= latm) {
-                    hash = hash << 1L;
-                    latb = new double[]{latb[0], latm};
+                if (lat <= midLat) {
+                    maxLat = midLat;
                 } else {
-                    hash = hash << 1L | 0x1;
-                    latb = new double[]{latm, latb[1]};
+                    hash |= 1L;
+                    minLat = midLat;
                 }
             }
         }
