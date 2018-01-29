@@ -1,6 +1,6 @@
 package org.chobit.geo.tools;
 
-public class ArgsChecker {
+public class Args {
 
 
     public static void check(boolean result, String errorMessage) {
@@ -8,7 +8,7 @@ public class ArgsChecker {
             throw new IllegalArgumentException(errorMessage);
     }
 
-    private ArgsChecker() {
+    private Args() {
         throw new UnsupportedOperationException("Private constructor, cannot be accessed.");
     }
 }

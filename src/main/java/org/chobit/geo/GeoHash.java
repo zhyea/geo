@@ -1,6 +1,6 @@
 package org.chobit.geo;
 
-import org.chobit.geo.tools.ArgsChecker;
+import org.chobit.geo.tools.Args;
 
 public final class GeoHash {
 
@@ -11,9 +11,9 @@ public final class GeoHash {
 
 
     public static String encodeHash(double latitude, double longitude, int length) {
-        ArgsChecker.check((length > MAX_GEO_HASH_LENGTH || length < 1), "Length must be between 1 and 12.");
-        ArgsChecker.check((latitude < -90D || latitude > 90D), "Latitude must be between -90 and 90.");
-        ArgsChecker.check((longitude < -180D || longitude > 180D), "Longitude must be between -180 and 180.");
+        Args.check((length > MAX_GEO_HASH_LENGTH || length < 1), "Length must be between 1 and 12.");
+        Args.check((latitude < -90D || latitude > 90D), "Latitude must be between -90 and 90.");
+        Args.check((longitude < -180D || longitude > 180D), "Longitude must be between -180 and 180.");
         return encodeToString(encodeToLong(latitude, longitude, length), length);
     }
 
@@ -24,7 +24,7 @@ public final class GeoHash {
 
 
     public static String encodeHash(Coordinate c, int length) {
-        ArgsChecker.check(null == c, "Coordinate cannot be null.");
+        Args.check(null == c, "Coordinate cannot be null.");
         return encodeHash(c.getLatitude(), c.getLongitude(), length);
     }
 
@@ -35,9 +35,9 @@ public final class GeoHash {
 
 
     public static Coordinate decodeHash(String source) {
-        ArgsChecker.check(null == source, "GeoHash is null.");
+        Args.check(null == source, "GeoHash is null.");
         int len = source.trim().length();
-        ArgsChecker.check(len < 0 || len > MAX_GEO_HASH_LENGTH, "GeoHash length must be between 1 and 12.");
+        Args.check(len < 0 || len > MAX_GEO_HASH_LENGTH, "GeoHash length must be between 1 and 12.");
         long hash = decodeToLong(source.trim().toLowerCase());
         System.out.println(hash);
         return null;
