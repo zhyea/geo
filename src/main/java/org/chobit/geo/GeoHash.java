@@ -4,10 +4,11 @@ import org.chobit.geo.tools.Args;
 
 public final class GeoHash {
 
-    public static final int MAX_GEO_HASH_LENGTH = 12;
+    private static final int MAX_GEO_HASH_LENGTH = 12;
 
+    private static final String BASE32 = "0123456789bcdefghjkmnpqrstuvwxyz";
 
-    public static final String BASE32 = "0123456789bcdefghjkmnpqrstuvwxyz";
+    private static final int[] BITS_5 = {16, 8, 4, 2, 1};
 
 
     public static String encodeHash(double latitude, double longitude, int length) {
@@ -35,31 +36,42 @@ public final class GeoHash {
 
 
     public static Coordinate decodeHash(String source) {
-        Args.check(null == source, "GeoHash is null.");
-        int len = source.trim().length();
+        Args.checkNotNull(source, "GeoHash is null.");
+        String geoHash = source.trim().toLowerCase();
+        int len = geoHash.length();
         Args.check(len < 0 || len > MAX_GEO_HASH_LENGTH, "GeoHash length must be between 1 and 12.");
-        long hash = decodeToLong(source.trim().toLowerCase());
-        System.out.println(hash);
-        return null;
-    }
 
-
-    private static long decodeToLong(String geoHash) {
         double minLat = -90D, maxLat = 90d;
         double minLng = -180D, maxLng = 180D;
 
-        long hash = 0L;
-        for (int i = 0; i < geoHash.length(); i++) {
-            hash |= BASE32.indexOf(geoHash.charAt(i));
-            hash <<= 5L;
+        double midLat = (minLat + maxLat) / 2;
+        double midLng = (minLng + maxLng) / 2;
+
+        boolean isEven = true;
+        for (int i = 0; i < len; i++) {
+            int tmp = BASE32.indexOf(geoHash.charAt(i));
+            for (int k = 0; k < 5; k++) {
+                if ((tmp & BITS_5[k]) != 0) {
+                    if (isEven) minLng = midLng;
+                    else minLat = midLat;
+                } else {
+                    if (isEven) maxLng = midLng;
+                    else maxLat = midLat;
+                }
+
+                isEven = !isEven;
+                midLat = (minLat + maxLat) / 2;
+                midLng = (minLng + maxLng) / 2;
+            }
         }
-        hash >>>= 5L;
-        return hash;
+        return new Coordinate(midLat, midLng);
     }
 
 
+
+
+
     private static String encodeToString(long hash, int len) {
-        System.out.println(Long.toBinaryString(hash));
         char[] chars = new char[len];
         while (len-- > 0) {
             chars[len] = BASE32.charAt((int) (hash & 31));

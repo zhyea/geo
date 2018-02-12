@@ -8,6 +8,11 @@ public class Args {
             throw new IllegalArgumentException(errorMessage);
     }
 
+    public static void checkNotNull(Object source, String errorMessage) {
+        if (null == source)
+            throw new IllegalArgumentException(errorMessage);
+    }
+
     private Args() {
         throw new UnsupportedOperationException("Private constructor, cannot be accessed.");
     }

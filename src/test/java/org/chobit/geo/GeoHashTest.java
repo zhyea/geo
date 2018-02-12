@@ -16,7 +16,9 @@ public class GeoHashTest extends TestCase {
 
     public void testDecodeHash() {
         String geoHash = "s00yvd6w";
-        GeoHash.decodeHash(geoHash);
+        Coordinate c = GeoHash.decodeHash(geoHash);
+        assertEquals(new Coordinate(1.1999988555908203, 1.2999916076660156), c);
+        System.out.println(c);
     }
 
 }
