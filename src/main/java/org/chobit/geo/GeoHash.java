@@ -2,6 +2,9 @@ package org.chobit.geo;
 
 import org.chobit.geo.tools.Args;
 
+/**
+ * @author rui.zhang
+ */
 public final class GeoHash {
 
     private static final int MAX_GEO_HASH_LENGTH = 12;
@@ -39,7 +42,7 @@ public final class GeoHash {
         Args.checkNotNull(source, "GeoHash is null.");
         String geoHash = source.trim().toLowerCase();
         int len = geoHash.length();
-        Args.check(len < 0 || len > MAX_GEO_HASH_LENGTH, "GeoHash length must be between 1 and 12.");
+        Args.check(len <= 0 || len > MAX_GEO_HASH_LENGTH, "GeoHash length must be between 1 and 12.");
 
         double minLat = -90D, maxLat = 90d;
         double minLng = -180D, maxLng = 180D;
@@ -52,11 +55,17 @@ public final class GeoHash {
             int tmp = BASE32.indexOf(geoHash.charAt(i));
             for (int k = 0; k < 5; k++) {
                 if ((tmp & BITS_5[k]) != 0) {
-                    if (isEven) minLng = midLng;
-                    else minLat = midLat;
+                    if (isEven) {
+                        minLng = midLng;
+                    } else {
+                        minLat = midLat;
+                    }
                 } else {
-                    if (isEven) maxLng = midLng;
-                    else maxLat = midLat;
+                    if (isEven) {
+                        maxLng = midLng;
+                    } else {
+                        maxLat = midLat;
+                    }
                 }
 
                 isEven = !isEven;
@@ -66,9 +75,6 @@ public final class GeoHash {
         }
         return new Coordinate(midLat, midLng);
     }
-
-
-
 
 
     private static String encodeToString(long hash, int len) {

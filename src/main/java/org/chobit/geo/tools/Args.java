@@ -4,13 +4,13 @@ public class Args {
 
 
     public static void check(boolean result, String errorMessage) {
-        if (result)
+        if (result) {
             throw new IllegalArgumentException(errorMessage);
+        }
     }
 
     public static void checkNotNull(Object source, String errorMessage) {
-        if (null == source)
-            throw new IllegalArgumentException(errorMessage);
+        check(null == source, errorMessage);
     }
 
     private Args() {
