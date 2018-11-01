@@ -3,7 +3,7 @@ package org.chobit.geo;
 import java.util.Objects;
 
 /**
- * @author rui.zhang
+ * @author robin
  */
 public final class Coordinate {
 

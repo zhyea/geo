@@ -3,7 +3,7 @@ package org.chobit.geo;
 import org.chobit.geo.tools.Args;
 
 /**
- * @author rui.zhang
+ * @author robin
  */
 public final class GeoHash {
 
