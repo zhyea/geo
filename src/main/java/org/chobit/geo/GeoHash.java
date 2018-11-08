@@ -19,10 +19,40 @@ public final class GeoHash {
     private static final int[] BITS_5 = {16, 8, 4, 2, 1};
 
 
+    public static String getNeighbor(Coordinate coordinate, int length, Direction direction) {
+        return getNeighbor(coordinate.getLatitude(), coordinate.getLongitude(), length, direction);
+    }
+
+
+    public static String getNeighbor(double latitude, double longitude, int length, Direction direction) {
+        double targetLat = latitude;
+        double targetLng = longitude;
+
+        switch (direction) {
+            case TOP:
+                targetLng = longitude - MIN_LNG;
+                break;
+            case RIGHT:
+                targetLat = latitude + MIN_LAT;
+                break;
+            case BOTTOM:
+                targetLng = longitude + MIN_LNG;
+                break;
+            case LEFT:
+                targetLat = latitude - MIN_LAT;
+                break;
+            default:
+                throw new IllegalArgumentException("Illegal Direction:" + direction);
+        }
+
+        return encodeHash(targetLat, targetLng, length);
+    }
+
+
     public static String encodeHash(double latitude, double longitude, int length) {
         Args.check((length > MAX_GEO_HASH_LENGTH || length < 1), "Length must be between 1 and 12.");
-        Args.check((latitude < -90D || latitude > 90D), "Latitude must be between -90 and 90.");
-        Args.check((longitude < -180D || longitude > 180D), "Longitude must be between -180 and 180.");
+        Args.check((latitude < MIN_LAT || latitude > MAX_LAT), "Latitude must be between -90 and 90.");
+        Args.check((longitude < MIN_LNG || longitude > MAX_LNG), "Longitude must be between -180 and 180.");
         return encodeToString(encodeToLong(latitude, longitude, length), length);
     }
 
@@ -96,8 +126,8 @@ public final class GeoHash {
         long hash = 0L;
         int times = len * 5;
 
-        double minLat = -90D, maxLat = 90d;
-        double minLng = -180D, maxLng = 180D;
+        double minLat = MIN_LAT, maxLat = MAX_LAT;
+        double minLng = MIN_LNG, maxLng = MAX_LNG;
 
         for (int i = 0; i < times; i++) {
             double midLat = (minLat + maxLat) / 2;
