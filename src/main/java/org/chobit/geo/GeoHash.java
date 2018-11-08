@@ -9,6 +9,11 @@ public final class GeoHash {
 
     private static final int MAX_GEO_HASH_LENGTH = 12;
 
+    private static final double MIN_LAT = -90D;
+    private static final double MAX_LAT = 90D;
+    private static final double MIN_LNG = -180D;
+    private static final double MAX_LNG = 180D;
+
     private static final String BASE32 = "0123456789bcdefghjkmnpqrstuvwxyz";
 
     private static final int[] BITS_5 = {16, 8, 4, 2, 1};
@@ -44,8 +49,8 @@ public final class GeoHash {
         int len = geoHash.length();
         Args.check(len <= 0 || len > MAX_GEO_HASH_LENGTH, "GeoHash length must be between 1 and 12.");
 
-        double minLat = -90D, maxLat = 90d;
-        double minLng = -180D, maxLng = 180D;
+        double minLat = MIN_LAT, maxLat = MAX_LAT;
+        double minLng = MIN_LNG, maxLng = MAX_LNG;
 
         double midLat = (minLat + maxLat) / 2;
         double midLng = (minLng + maxLng) / 2;
